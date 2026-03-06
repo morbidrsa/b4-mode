@@ -8,3 +8,12 @@ Call `b4-shazam` using 'C-c b s'
 
 *** b4-am
 Call `b4-am` using 'C-c b a'
+
+** Installation
+'b4-mode' can be installed e.g. with `use-package`:
+
+#+begin_src elisp
+(use-package b4-mode
+  :ensure t
+  :vc (:url https://github.com/morbidrsa/b4-mode))
+#+end_src
