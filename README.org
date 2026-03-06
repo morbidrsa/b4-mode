@@ -1,0 +1,7 @@
+* b4-mode
+Emacs major mode to interact with "b4" .
+
+** Commands
+
+*** b4-shazam
+Call `b4-shazam` using 'C-c b s'
