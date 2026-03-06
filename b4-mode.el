@@ -39,6 +39,8 @@
   (let ((map (make-sparse-keymap)))
     ;; Simple key binding:  C-c b s  →  b4-shazam
     (define-key map (kbd "C-c b s") #'b4-shazam)
+    ;; Simple key binding:  C-c b a  →  b4-am
+    (define-key map (kbd "C-c b a") #'b4-am)
     map)
   "Keymap for `b4-mode`.")
 
@@ -86,6 +88,28 @@ message id from the word at point."
     (start-process "b4-shazam" outbuf b4-exec "shazam" msgid)
     (display-buffer outbuf)
     (message "b4: shazam %s launched" msgid)))
+
+(defun b4-am (msgid)
+  "Run `b4 am` on the given MSGID and display the result.
+If called without a prefix argument the command will try to guess the
+message id from the word at point."
+  (interactive
+   (list (read-string "Message ID: "
+                      nil nil
+                      (or (thing-at-point 'word) ""))))
+  (unless msgid
+    (user-error "No message id supplied"))
+  (let* ((b4-exec (b4-mode--executable))
+         (outbuf (b4--output-buffer "*b4-am*"))
+         (args (list "am" msgid)))
+    (with-current-buffer outbuf
+      (setq buffer-read-only nil)
+      (erase-buffer)
+      (insert (format "Running: %s %s\n\n" b4-exec (string-join args " "))))
+    (start-process "b4-am" outbuf b4-exec "am" msgid)
+    (display-buffer outbuf)
+    (message "b4: am %s launched" msgid)))
+
 
 ;;; Minor‑mode fallback -------------------------------------------------------
 

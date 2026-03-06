@@ -5,3 +5,6 @@ Emacs major mode to interact with "b4" .
 
 *** b4-shazam
 Call `b4-shazam` using 'C-c b s'
+
+*** b4-am
+Call `b4-am` using 'C-c b a'
