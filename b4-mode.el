@@ -5,6 +5,7 @@
 ;; Author: Johannes Thumshirn <jth@kernel.org>
 ;; Url: https://github.com/morbidrsa/b4-mode
 ;; Keywords: Org, convenience, outlines
+;; Package-Requires: ((emacs "25.1"))
 ;; Version: 0.0.1
 
 ;; This file is NOT part of GNU Emacs.
