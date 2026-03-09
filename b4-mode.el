@@ -6,7 +6,6 @@
 ;; Url: https://github.com/morbidrsa/b4-mode
 ;; Keywords: Org, convenience, outlines
 ;; Version: 0.0.1
-;; Package-Requires: (emacs "25")
 
 ;; This file is NOT part of GNU Emacs.
 ;;; Commentary:
