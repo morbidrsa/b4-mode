@@ -21,6 +21,7 @@
 ;; and will signal an error if it is missing.
 
 (require 'cl-lib)
+(require 'transient)
 
 (defcustom b4-mode-executable "b4"
   "The name of the `b4` executable on your system."
@@ -68,7 +69,47 @@ are automatically recognised."
 
 ;;; Interactive command -------------------------------------------------------
 
-(defun b4-shazam (msgid)
+(defun b4-shazam-run (msgid)
+  (interactive
+   (list (read-string "Message ID: "
+                      nil nil
+                      (or (thing-at-point 'word) ""))))
+  (b4-shazam msgid (transient-args 'b4-shazam-menu)))
+
+(transient-define-prefix b4-shazam-menu ()
+  "b4 shazam options."
+  [["Thread retrieval"
+    ("m" "use local mbox" "--use-local-mbox=")
+    ("C" "no cache" "--no-cache")
+    ("1" "single message" "--single-message")
+    ("v" "version" "--use-version=")]
+
+   ["Trailer handling"
+    ("S" "sloppy trailers" "--sloppy-trailers")
+    ("T" "no trailers" "--no-add-trailers")
+    ("s" "add my SOB" "--add-my-sob")
+    ("c" "cc trailers" "--cc-trailers")]
+
+   ["Patch handling"
+    ("P" "cherry-pick" "--cherry-pick=")
+    ("k" "check patches" "--check")
+    ("n" "no parent" "--no-parent")]
+
+   ["Pull-request style"
+    ("H" "fetch to FETCH_HEAD" "--make-fetch-head")
+    ("M" "merge series" "--merge")
+    ("g" "guess lookback" "--guess-lookback=")
+    ("b" "merge base" "--merge-base=")]
+
+   ["Misc"
+    ("l" "add Link trailer" "--add-link")
+    ("i" "add Message-ID trailer" "--add-message-id")
+    ("u" "allow unicode ctrl chars" "--allow-unicode-control-chars")]
+
+   ["Run"
+    ("z" "Run shazam" b4-shazam-run)]])
+
+(defun b4-shazam (msgid &optional extra-args)
   "Run `b4 shazam` on the given MSGID and display the result.
 If called without a prefix argument the command will try to guess the
 message id from the word at point."
@@ -80,12 +121,14 @@ message id from the word at point."
     (user-error "No message id supplied"))
   (let* ((b4-exec (b4-mode--executable))
          (outbuf (b4--output-buffer "*b4-shazam*"))
-         (args (list "shazam" msgid)))
+         (args (append (list "shazam") extra-args (list msgid))))
     (with-current-buffer outbuf
       (setq buffer-read-only nil)
       (erase-buffer)
-      (insert (format "Running: %s %s\n\n" b4-exec (string-join args " "))))
-    (start-process "b4-shazam" outbuf b4-exec "shazam" msgid)
+      (insert (format "Running: %s %s\n\n"
+                      b4-exec
+                      (string-join args " "))))
+    (apply #'start-process "b4-shazam" outbuf b4-exec args)
     (display-buffer outbuf)
     (message "b4: shazam %s launched" msgid)))
 
